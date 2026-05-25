@@ -120,7 +120,7 @@ export default function LocationMap() {
             <h4 style="margin: 0 0 4px 0; font-weight: bold; font-size: 14px; color: #151515;">${loc.name}</h4>
             <p style="margin: 0 0 6px 0; font-size: 11px; color: #666;">${loc.address}</p>
             <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #eee; padding-top: 6px;">
-              <span style="font-size: 10px; font-weight: bold; text-transform: uppercase; color: ${markerColor};">${loc.status}</span>
+              <span style="font-size: 10px; font-weight: bold; text-transform: uppercase; color: ${pinColor};">${loc.status}</span>
               <span style="font-size: 11px; font-weight: bold; color: #B42318;">⭐ ${loc.score}/5</span>
             </div>
           </div>
