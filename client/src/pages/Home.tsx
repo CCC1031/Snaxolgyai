@@ -30,6 +30,7 @@ import VendingCalculator from "@/components/VendingCalculator";
 import LocationScorecard from "@/components/LocationScorecard";
 import PitchHelper from "@/components/PitchHelper";
 import InspectionChecklist from "@/components/InspectionChecklist";
+import LocationMap from "@/components/LocationMap";
 
 interface Task {
   id: string;
@@ -395,8 +396,11 @@ export default function Home() {
             </p>
           </div>
 
-          <Tabs defaultValue="calculator" className="w-full">
-            <TabsList className="grid grid-cols-2 md:grid-cols-4 w-full max-w-2xl mx-auto mb-8 bg-muted border-2 border-foreground/5 p-1 rounded-lg">
+          <Tabs defaultValue="map" className="w-full">
+            <TabsList className="grid grid-cols-2 md:grid-cols-5 w-full max-w-4xl mx-auto mb-8 bg-muted border-2 border-foreground/5 p-1 rounded-lg">
+              <TabsTrigger value="map" className="font-serif font-bold py-2.5 data-[state=active]:bg-card data-[state=active]:text-primary rounded-md transition-all text-xs sm:text-sm">
+                🗺️ Route Map
+              </TabsTrigger>
               <TabsTrigger value="calculator" className="font-serif font-bold py-2.5 data-[state=active]:bg-card data-[state=active]:text-primary rounded-md transition-all text-xs sm:text-sm">
                 Profit Calculator
               </TabsTrigger>
@@ -412,6 +416,9 @@ export default function Home() {
             </TabsList>
 
             <div className="focus-visible:outline-none">
+              <TabsContent value="map" className="focus-visible:outline-none">
+                <LocationMap />
+              </TabsContent>
               <TabsContent value="calculator" className="focus-visible:outline-none">
                 <VendingCalculator />
               </TabsContent>
