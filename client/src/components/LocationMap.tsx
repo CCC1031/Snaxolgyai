@@ -75,27 +75,41 @@ export default function LocationMap() {
     const bounds = new google.maps.LatLngBounds();
 
     locations.forEach((loc) => {
-      // Color code based on status
-      let markerColor = "#B42318"; // Prospect: Cherry Red
-      if (loc.status === "secured") markerColor = "#74A35A"; // Secured: Sage Green
-      if (loc.status === "contacted") markerColor = "#FF9500"; // Contacted: Amber
-      if (loc.status === "rejected") markerColor = "#8E8E93"; // Rejected: Gray
+      // Snaxology Branded Custom SVG Pins (Vending Machine / Automat silhouettes with distinct inner icons)
+      let pinColor = "#B42318"; // Prospect: Snaxology Cherry Red
+      let innerIconPath = "M12 17a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm0-4a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm0-4a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"; // Target: 3 vertical dots (shelves)
+      let pinTitle = "Target Prospect";
 
-      // Create marker pin using SVG
+      if (loc.status === "secured") {
+        pinColor = "#74A35A"; // Secured: Snaxology Sage Green
+        innerIconPath = "M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"; // Checkmark
+        pinTitle = "Secured Placement";
+      } else if (loc.status === "contacted") {
+        pinColor = "#E0843D"; // Contacted: Snaxology Mustard/Amber Orange
+        innerIconPath = "M20.01 15.38c-1.23 0-2.42-.2-3.53-.56a.977.977 0 0 0-1.01.24l-2.2 2.2a15.045 15.045 0 0 1-6.59-6.59l2.2-2.21a.96.96 0 0 0 .25-1.02c-.36-1.11-.56-2.3-.56-3.53C8.37 3.45 7.92 3 7.39 3H4.02C3.49 3 3 3.45 3 4.02C3 13.39 10.61 21 19.98 21c.57 0 1.02-.46 1.02-1.02v-3.53c0-.54-.45-1.07-1.01-1.07z"; // Phone Icon
+        pinTitle = "Contacted";
+      } else if (loc.status === "rejected") {
+        pinColor = "#8E8E93"; // Rejected: Gray
+        innerIconPath = "M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"; // X Close Icon
+        pinTitle = "Closed / Rejected";
+      }
+
+      // Snaxology Custom Vending Machine Silhouette Pin
       const svgMarker = {
-        path: "M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-12-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z",
-        fillColor: markerColor,
+        // A sophisticated retro vending machine shape pin outline
+        path: "M6 2h12a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-3l3 3H5l3-3H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm0 2v5h12V4H6zm0 7v7h12v-7H6z",
+        fillColor: pinColor,
         fillOpacity: 1,
-        strokeWeight: 2,
+        strokeWeight: 1.5,
         strokeColor: "#FFFFFF",
-        scale: 1.5,
-        anchor: new google.maps.Point(12, 21),
+        scale: 1.3,
+        anchor: new google.maps.Point(12, 24),
       };
 
       const marker = new google.maps.Marker({
         position: { lat: loc.lat, lng: loc.lng },
         map: mapRef.current,
-        title: loc.name,
+        title: `${loc.name} (${pinTitle})`,
         icon: svgMarker,
       });
 
