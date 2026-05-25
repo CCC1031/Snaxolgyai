@@ -1,0 +1,160 @@
+[
+  {
+    "id": 1,
+    "title": "Decide on Your Vending Entity",
+    "badge": "Entity",
+    "quote": "If you fail to plan, you are planning to fail.",
+    "quoteAuthor": "Benjamin Franklin",
+    "description": "Before you buy machines or stock snacks, you must establish a solid legal and financial foundation. Operating as an individual without a formal business structure exposes your personal assets to liability if someone gets hurt or a location sues.",
+    "tasks": [
+      { "id": "1_1", "text": "Choose your vending business name.", "done": false },
+      { "id": "1_2", "text": "Research LLC/entity requirements in your state.", "done": false },
+      { "id": "1_3", "text": "Apply for an EIN through the IRS if eligible.", "done": false },
+      { "id": "1_4", "text": "Open a business bank account.", "done": false },
+      { "id": "1_5", "text": "Create a simple business email, website, or social profile.", "done": false }
+    ],
+    "tips": [
+      "Keep personal and business finances strictly separate to maintain your LLC liability protection.",
+      "An EIN is free from the IRS website. Avoid third-party services that charge fees to file it for you."
+    ]
+  },
+  {
+    "id": 2,
+    "title": "Select Your Beginner Vending Model",
+    "badge": "Model",
+    "description": "Vending machines are not all the same. Your equipment choice dictates your product cost, location options, maintenance needs, and growth strategy. Choose the model that fits your budget and time.",
+    "tasks": [
+      { "id": "2_1", "text": "Pick your beginner vending model (Bulk, Snack, Cold Drink, or Combo).", "done": false },
+      { "id": "2_2", "text": "Review budget constraints (Bulk: under $500, Combo: $1,500-$4,000).", "done": false },
+      { "id": "2_3", "text": "Decide if you will start with cash-only or plan for digital upgrades.", "done": false }
+    ],
+    "tips": [
+      "Bulk Vending (gumballs, toys) has the lowest barrier to entry and works well in local pizzerias, laundromats, and barber shops.",
+      "Snack/Drink Combos are highly popular but require reliable refrigeration and MDB compatibility if you want card readers."
+    ]
+  },
+  {
+    "id": 3,
+    "title": "Brainstorm and Map Out 25 Potential Locations",
+    "badge": "Prospecting",
+    "description": "Vending is entirely about placement. A machine in a high-traffic location will make money even with poor product selection, but a machine in a dead location will fail even with premium stock. Start by mapping out opportunities within 20 minutes of your home.",
+    "tasks": [
+      { "id": "3_1", "text": "Write down 25 possible locations near your home.", "done": false },
+      { "id": "3_2", "text": "Categorize them (e.g., offices, warehouses, laundromats, auto shops).", "done": false },
+      { "id": "3_3", "text": "Identify the decision-maker or manager for each prospect.", "done": false }
+    ],
+    "tips": [
+      "Look for places where people wait: auto repair waiting rooms, laundromats, or warehouse break rooms.",
+      "Keep your route tight. A machine 45 minutes away eats up your profit in gas and travel time."
+    ]
+  },
+  {
+    "id": 4,
+    "title": "Execute the Outreach and Pitch",
+    "badge": "Outreach",
+    "description": "Getting locations requires active outreach. You are offering a free amenity to improve their employee or customer experience. Use Clarence's proven script to open doors and overcome common objections.",
+    "tasks": [
+      { "id": "4_1", "text": "Contact at least 10 locations this week.", "done": false },
+      { "id": "4_2", "text": "Use the pitch script: 'We install, stock, and service the machine at zero cost to you.'", "done": false },
+      { "id": "4_3", "text": "Overcome the commission objection by focusing on service first.", "done": false }
+    ],
+    "tips": [
+      "Focus on service: 'We keep it clean, stocked, and working. If you want a commission, we can discuss that once we see the volume, but our main value is reliable service.'",
+      "Always leave a professional flyer or business card with your Snaxology-branded contact details."
+    ]
+  },
+  {
+    "id": 5,
+    "title": "Secure the Placement Agreement",
+    "badge": "Agreement",
+    "description": "Before you buy or move any machine, secure the agreement in writing. A simple, clear agreement protects your placement, outlines responsibilities, and prevents sudden removals.",
+    "tasks": [
+      { "id": "5_1", "text": "Draft a simple 1-page placement agreement.", "done": false },
+      { "id": "5_2", "text": "Specify who pays for electricity (usually the location).", "done": false },
+      { "id": "5_3", "text": "Define the exit clause (e.g., 30 days notice for either party).", "done": false },
+      { "id": "5_4", "text": "Confirm the exact physical spot for the machine.", "done": false }
+    ],
+    "tips": [
+      "Keep it simple. A 5-page legal document scares small business owners. A 1-page 'Service Agreement' feels cooperative.",
+      "Make sure the outlet is reliable and not connected to a light switch that gets turned off at night."
+    ]
+  },
+  {
+    "id": 6,
+    "title": "Inspect and Purchase the Right Equipment",
+    "badge": "Sourcing",
+    "description": "Never buy a machine sight unseen. Used equipment can have hidden electrical, coin mechanism, or refrigeration issues that cost hundreds of dollars to fix. Take a physical checklist and test everything before paying.",
+    "tasks": [
+      { "id": "6_1", "text": "Locate a machine on Facebook Marketplace, Craigslist, or local distributors.", "done": false },
+      { "id": "6_2", "text": "Inspect the machine using the physical inspection checklist.", "done": false },
+      { "id": "6_3", "text": "Verify MDB compatibility if you plan to add cashless payments.", "done": false },
+      { "id": "6_4", "text": "Negotiate the price based on any defects found.", "done": false }
+    ],
+    "tips": [
+      "Bring rolls of quarters, dimes, nickels, and dollar bills to test the bill validator and coin mech multiple times.",
+      "If a drink machine is warm, walk away unless you are a refrigeration technician or getting it practically free."
+    ]
+  },
+  {
+    "id": 7,
+    "title": "Safe Delivery, Installation, and Stocking",
+    "badge": "Logistics",
+    "description": "Moving a 600-pound machine is dangerous. Plan the logistics carefully, measure every doorway, and stock the machine with proven crowd-pleasers rather than niche snacks.",
+    "tasks": [
+      { "id": "7_1", "text": "Measure doorways, hallways, and elevators at the location.", "done": false },
+      { "id": "7_2", "text": "Secure an appliance dolly, heavy-duty straps, and helper support.", "done": false },
+      { "id": "7_3", "text": "Purchase inventory from wholesale clubs (Costco, Sam's Club, BJ's).", "done": false },
+      { "id": "7_4", "text": "Stock the machine: 80% proven sellers, 20% test items.", "done": false }
+    ],
+    "tips": [
+      "Proven sellers: Coca-Cola, Pepsi, Sprite, Doritos, Lay's, Snickers, M&Ms, and bottled water.",
+      "Always unplug the machine before moving it and let it sit upright for a few hours before plugging it in so the compressor oil settles."
+    ]
+  },
+  {
+    "id": 8,
+    "title": "Track Cash Flow, Profit, and Reinvestment",
+    "badge": "Finance",
+    "description": "Revenue is not profit. To grow, you must track every machine separately, understand your gross margins, and reinvest your early profits back into the business.",
+    "tasks": [
+      { "id": "8_1", "text": "Set up a separate spreadsheet or ledger for each machine.", "done": false },
+      { "id": "8_2", "text": "Track Gross Sales, Cost of Goods Sold (COGS), and Operating Expenses.", "done": false },
+      { "id": "8_3", "text": "Calculate your machine's Payback Period.", "done": false },
+      { "id": "8_4", "text": "Reinvest 100% of early profits into inventory, card readers, or the next machine.", "done": false }
+    ],
+    "tips": [
+      "A healthy gross margin on snacks and drinks should be 50% to 60%. If you buy a soda for $0.50, sell it for $1.25 to $1.50.",
+      "Do not spend your profits on personal items until your route is fully self-sustaining."
+    ]
+  },
+  {
+    "id": 9,
+    "title": "Go Digital with Cashless Upgrades",
+    "badge": "Technology",
+    "description": "Adding a card reader can increase sales by 30% to 40% because fewer people carry cash. But digital upgrades come with equipment costs and transaction fees. Add them when your volume justifies the cost.",
+    "tasks": [
+      { "id": "9_1", "text": "Evaluate if the location volume justifies a card reader ($10-$15/mo fee + 3-5% transaction fee).", "done": false },
+      { "id": "9_2", "text": "Order a compatible card reader (e.g., Nayax, Cantaloupe).", "done": false },
+      { "id": "9_3", "text": "Install and test mobile pay, credit card, and remote telemetry.", "done": false }
+    ],
+    "tips": [
+      "Cashless readers are ideal for offices, universities, and hospitals, but cash is still king in heavy industrial or construction sites.",
+      "Telemetry allows you to see what has sold from your phone, saving you unnecessary trips."
+    ]
+  },
+  {
+    "id": 10,
+    "title": "Execute Growth and Route Expansion Plays",
+    "badge": "Scaling",
+    "description": "Once your first machine is running smoothly, you can run advanced growth plays. Buy existing routes, upgrade equipment, or offer premium micro-markets and smart coolers to high-value locations.",
+    "tasks": [
+      { "id": "10_1", "text": "Analyze underperforming machines and prepare to relocate them if necessary.", "done": false },
+      { "id": "10_2", "text": "Look for existing-route purchase opportunities and verify their sales numbers.", "done": false },
+      { "id": "10_3", "text": "Introduce premium smart coolers or micro-markets for high-end clients.", "done": false }
+    ],
+    "tips": [
+      "If a machine makes less than $100/mo after 90 days, move it. Don't fall in love with a bad location.",
+      "Snaxology's premium AI smart coolers and micro-markets are excellent upsells for offices with 100+ employees."
+    ]
+  }
+]
