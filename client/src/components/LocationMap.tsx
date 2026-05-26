@@ -75,6 +75,19 @@ export default function LocationMap({ onScoreLocation }: LocationMapProps) {
     updateMarkers();
   };
 
+  // Handle scorecard click from Leaflet popup
+  useEffect(() => {
+    // Expose a global handler so that buttons in the raw Leaflet HTML popups can call React props
+    (window as any).handleScorecardFromPopup = (id: string) => {
+      if (onScoreLocation) {
+        onScoreLocation(id);
+      }
+    };
+    return () => {
+      delete (window as any).handleScorecardFromPopup;
+    };
+  }, [onScoreLocation]);
+
   // Re-render markers and fit bounds
   const updateMarkers = () => {
     if (!mapRef.current) return;
@@ -122,16 +135,57 @@ export default function LocationMap({ onScoreLocation }: LocationMapProps) {
         popupAnchor: [0, -40]
       });
 
+      // Determine status display text and background style for popup
+      let statusBg = "#FEE4E2";
+      let statusText = "#B42318";
+      if (loc.status === "secured") {
+        statusBg = "#ECFDF3";
+        statusText = "#027A48";
+      } else if (loc.status === "contacted") {
+        statusBg = "#FFFAEB";
+        statusText = "#B54708";
+      } else if (loc.status === "rejected") {
+        statusBg = "#F2F4F7";
+        statusText = "#344054";
+      }
+
+      // Calculate total points and percentage
+      const totalPoints = loc.score * 10; // score is out of 5
+      const percentage = (loc.score / 5) * 100;
+
       const marker = L.marker([loc.lat, loc.lng], { icon: customIcon })
         .addTo(mapRef.current!)
         .bindPopup(`
-          <div style="font-family: system-ui, sans-serif; padding: 4px; max-width: 200px;">
-            <h4 style="margin: 0 0 4px 0; font-weight: bold; font-size: 14px; color: #151515;">${loc.name}</h4>
-            <p style="margin: 0 0 6px 0; font-size: 11px; color: #666; line-height: 1.3;">${loc.address}</p>
-            <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #eee; padding-top: 6px; margin-top: 4px;">
-              <span style="font-size: 10px; font-weight: bold; text-transform: uppercase; color: ${pinColor};">${loc.status}</span>
-              <span style="font-size: 11px; font-weight: bold; color: #B42318;">⭐ ${loc.score}/5</span>
+          <div style="font-family: system-ui, sans-serif; padding: 8px; width: 220px; box-sizing: border-box;">
+            <!-- Title and Address -->
+            <h4 style="margin: 0 0 4px 0; font-weight: 700; font-size: 14px; color: #1c1917; font-family: Georgia, serif;">${loc.name}</h4>
+            <p style="margin: 0 0 10px 0; font-size: 11px; color: #57534e; line-height: 1.4;">${loc.address}</p>
+            
+            <!-- Quick Stats -->
+            <div style="display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; background: #fafaf9; padding: 8px; border-radius: 6px; border: 1px solid #f5f5f4;">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-size: 10px; color: #78716c; font-weight: 500;">Outreach Status</span>
+                <span style="font-size: 10px; font-weight: 700; text-transform: uppercase; padding: 2px 6px; border-radius: 4px; background-color: ${statusBg}; color: ${statusText};">${loc.status}</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-size: 10px; color: #78716c; font-weight: 500;">Vending Score</span>
+                <span style="font-size: 11px; font-weight: 700; color: #854d0e;">⭐ ${loc.score > 0 ? `${loc.score}/5 (${percentage}%)` : "Not Scored"}</span>
+              </div>
             </div>
+
+            <!-- Action Button -->
+            <button 
+              onclick="window.handleScorecardFromPopup('${loc.id}')"
+              style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 6px; background-color: #8C1D18; color: #ffffff; border: none; padding: 6px 12px; border-radius: 6px; font-size: 11px; font-weight: 600; cursor: pointer; transition: background-color 0.2s;"
+              onmouseover="this.style.backgroundColor='#721612'"
+              onmouseout="this.style.backgroundColor='#8C1D18'"
+            >
+              <svg viewBox="0 0 24 24" width="12" height="11" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block;">
+                <polyline points="9 11 12 14 22 4"></polyline>
+                <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+              </svg>
+              ${loc.score > 0 ? "Update Scorecard" : "Evaluate Scorecard"}
+            </button>
           </div>
         `);
 
