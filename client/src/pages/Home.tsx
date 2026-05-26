@@ -546,12 +546,7 @@ export default function Home() {
                   ccolin@snaxologyvending.com
                 </a>
               </div>
-              <div className="flex items-center gap-2.5">
-                <Phone className="w-4 h-4 text-primary shrink-0" />
-                <a href="tel:3055270879" className="hover:text-primary hover:underline">
-                  305-527-0879
-                </a>
-              </div>
+
               <div className="flex items-center gap-2.5">
                 <Instagram className="w-4 h-4 text-primary shrink-0" />
                 <a href="https://www.instagram.com/_snaxology/" target="_blank" rel="noopener noreferrer" className="hover:text-primary hover:underline flex items-center gap-1">

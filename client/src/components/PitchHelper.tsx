@@ -32,7 +32,7 @@ export default function PitchHelper() {
     },
     {
       q: "What if the machine breaks down or eats someone's money?",
-      a: "That's our top priority. Every Snaxology machine has a clear sticker with our direct phone number (305-527-0879) and email. If a machine ever has an issue or refunds are needed, we respond within 24 hours, and we refund any lost money immediately, no questions asked. We also use modern guaranteed-delivery sensors—if a snack doesn't drop, the customer's card or cash is never charged."
+      a: "That's our top priority. Every Snaxology machine has a clear sticker with our direct contact number and email. If a machine ever has an issue or refunds are needed, we respond within 24 hours, and we refund any lost money immediately, no questions asked. We also use modern guaranteed-delivery sensors—if a snack doesn't drop, the customer's card or cash is never charged."
     },
     {
       q: "We already have a vending service, but they are terrible.",
