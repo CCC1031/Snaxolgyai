@@ -45,21 +45,41 @@ export default function LeadCaptureModal({ isOpen, onClose, calculatorData, loca
     setIsSubmitting(true);
 
     try {
-      // Simulate API Lead Submission (and sending details to Clarence's inbox)
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-      
-      console.log("Lead captured for Clarence/Snaxology:", {
-        lead: { name, email, phone },
-        vendingPlan: { calculatorData, locations }
+      // Prepare the payload for Google Sheets / Google Apps Script
+      const payload = {
+        name: name.trim(),
+        email: email.trim().toLowerCase(),
+        phone: phone.trim(),
+        monthlyRevenue: calculatorData.monthlyRevenue,
+        monthlyMargin: calculatorData.monthlyMargin,
+        annualProfit: calculatorData.annualProfit,
+        paybackMonths: Number(calculatorData.paybackMonths.toFixed(1)),
+        locationsCount: locations.length,
+        // Format locations as a readable list
+        locationsList: locations.map(l => `${l.name} (${l.score}/5 stars - ${l.status})`).join("; "),
+        timestamp: new Date().toISOString()
+      };
+
+      // Send lead directly to Google Apps Script Web App
+      const response = await fetch("https://script.google.com/macros/s/AKfycby1nik5Zya205VV_8NQl3961eZ-MXU7bsgkJU1TPCtEErDIwK0ZLBlb-3WoIPTVeU3u/exec", {
+        method: "POST",
+        mode: "no-cors", // Google Apps Script requires no-cors for direct browser fetches to prevent CORS preflight blocks
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
       });
 
+      console.log("Lead successfully dispatched to Google Sheets:", payload);
+
       setIsSubmittingSuccess(true);
-      toast.success("Vending plan generated successfully! Your download will start now.");
+      toast.success("Vending plan generated and saved successfully!");
       
       // Trigger the PDF Generation
       generateBrandedPDF();
     } catch (err) {
-      toast.error("Failed to generate plan. Please try again.");
+      console.error("Google Sheets Submission Error:", err);
+      toast.error("Failed to submit plan. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
