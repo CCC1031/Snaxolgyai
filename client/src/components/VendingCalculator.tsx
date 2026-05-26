@@ -1,14 +1,33 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { DollarSign, Percent, TrendingUp, Calendar } from "lucide-react";
 
 export default function VendingCalculator() {
-  const [machineCost, setMachineCost] = useState<number>(2000);
-  const [monthlySales, setMonthlySales] = useState<number>(500);
-  const [cogsPercent, setCogsPercent] = useState<number>(45); // Cost of Goods Sold %
-  const [operatingExpenses, setOperatingExpenses] = useState<number>(50); // Gas, fees, etc.
+  const [machineCost, setMachineCost] = useState<number>(() => {
+    const saved = localStorage.getItem("snaxology_calc_machine_cost");
+    return saved ? Number(saved) : 2000;
+  });
+  const [monthlySales, setMonthlySales] = useState<number>(() => {
+    const saved = localStorage.getItem("snaxology_calc_monthly_sales");
+    return saved ? Number(saved) : 500;
+  });
+  const [cogsPercent, setCogsPercent] = useState<number>(() => {
+    const saved = localStorage.getItem("snaxology_calc_cogs_percent");
+    return saved ? Number(saved) : 45;
+  }); // Cost of Goods Sold %
+  const [operatingExpenses, setOperatingExpenses] = useState<number>(() => {
+    const saved = localStorage.getItem("snaxology_calc_operating_expenses");
+    return saved ? Number(saved) : 50;
+  }); // Gas, fees, etc.
+
+  useEffect(() => {
+    localStorage.setItem("snaxology_calc_machine_cost", machineCost.toString());
+    localStorage.setItem("snaxology_calc_monthly_sales", monthlySales.toString());
+    localStorage.setItem("snaxology_calc_cogs_percent", cogsPercent.toString());
+    localStorage.setItem("snaxology_calc_operating_expenses", operatingExpenses.toString());
+  }, [machineCost, monthlySales, cogsPercent, operatingExpenses]);
 
   // Calculations
   const monthlyCOGS = (monthlySales * cogsPercent) / 100;

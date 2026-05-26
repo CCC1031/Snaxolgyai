@@ -31,6 +31,7 @@ import LocationScorecard from "@/components/LocationScorecard";
 import PitchHelper from "@/components/PitchHelper";
 import InspectionChecklist from "@/components/InspectionChecklist";
 import LocationMap from "@/components/LocationMap";
+import LeadCaptureModal from "@/components/LeadCaptureModal";
 
 interface Task {
   id: string;
@@ -53,6 +54,45 @@ export default function Home() {
   const [steps, setSteps] = useState<Step[]>([]);
   const [activeStepId, setActiveStepId] = useState<number>(1);
   const [expandedTips, setExpandedTips] = useState<Record<number, boolean>>({});
+  const [isLeadModalOpen, setIsLeadModalOpen] = useState(false);
+
+  // Read current calculator & locations data to pass to the LeadCaptureModal
+  const getFunnelData = () => {
+    const savedLocations = localStorage.getItem("snaxology_vending_locations");
+    const locations = savedLocations ? JSON.parse(savedLocations) : [];
+
+    const machineCost = Number(localStorage.getItem("snaxology_calc_machine_cost") || "2000");
+    const monthlyRevenue = Number(localStorage.getItem("snaxology_calc_monthly_sales") || "500");
+    const cogsPercent = Number(localStorage.getItem("snaxology_calc_cogs_percent") || "45");
+    const operatingExpenses = Number(localStorage.getItem("snaxology_calc_operating_expenses") || "50");
+
+    const monthlyCOGS = (monthlyRevenue * cogsPercent) / 100;
+    const grossProfit = monthlyRevenue - monthlyCOGS;
+    const monthlyMargin = grossProfit - operatingExpenses;
+    const annualProfit = monthlyMargin > 0 ? monthlyMargin * 12 : 0;
+    const paybackMonths = monthlyMargin > 0 ? machineCost / monthlyMargin : 0;
+
+    return {
+      calculatorData: {
+        monthlyRevenue,
+        marginPercent: monthlyRevenue > 0 ? Math.round((monthlyMargin / monthlyRevenue) * 100) : 0,
+        monthlyMargin,
+        vendingPrice: 2.50, // Standard average product price
+        cogs: monthlyCOGS,
+        annualProfit,
+        machineCost,
+        paybackMonths,
+      },
+      locations: locations.map((l: any) => ({
+        name: l.name,
+        address: l.address,
+        score: l.score,
+        status: l.status
+      }))
+    };
+  };
+
+  const { calculatorData, locations } = getFunnelData();
 
   // Initialize steps from localStorage or JSON
   useEffect(() => {
@@ -169,19 +209,28 @@ export default function Home() {
           </div>
           
           {/* Progress Bar & Reset Button */}
-          <div className="flex items-center gap-6 w-full sm:w-auto grow max-w-md">
+          <div className="flex items-center gap-6 w-full sm:w-auto grow max-w-xl">
             <div className="grow space-y-1">
               <Progress value={overallProgress} className="h-3 bg-primary-foreground/20 border border-primary-foreground/10 [&>div]:bg-background" />
               <p className="text-[10px] text-right opacity-80 font-semibold uppercase tracking-wider">{completedTasks} of {totalTasks} milestones achieved</p>
             </div>
-            <Button 
-              onClick={handleResetProgress}
-              variant="outline" 
-              size="sm" 
-              className="border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground text-xs font-serif font-bold"
-            >
-              Reset
-            </Button>
+            
+            <div className="flex gap-2.5 shrink-0">
+              <Button
+                onClick={() => setIsLeadModalOpen(true)}
+                className="bg-background text-primary hover:bg-background/90 text-xs font-serif font-black shadow-[2px_2px_0px_0px_rgba(0,0,0,0.1)] transition-transform active:scale-95"
+              >
+                📥 Download Plan
+              </Button>
+              <Button 
+                onClick={handleResetProgress}
+                variant="outline" 
+                size="sm" 
+                className="border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground text-xs font-serif font-bold"
+              >
+                Reset
+              </Button>
+            </div>
           </div>
         </div>
       </section>
@@ -435,6 +484,14 @@ export default function Home() {
           </Tabs>
         </div>
       </section>
+
+      {/* Lead Capture & PDF Generation Funnel Modal */}
+      <LeadCaptureModal
+        isOpen={isLeadModalOpen}
+        onClose={() => setIsLeadModalOpen(false)}
+        calculatorData={calculatorData}
+        locations={locations}
+      />
 
       {/* Footer & Snaxology Call to Action */}
       <footer className="bg-foreground text-background border-t-2 border-primary/20 py-16">
