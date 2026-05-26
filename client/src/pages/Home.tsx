@@ -448,23 +448,26 @@ export default function Home() {
           </div>
 
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="flex flex-wrap md:grid md:grid-cols-5 w-full max-w-4xl mx-auto gap-2 md:gap-0 mb-8 bg-muted/50 md:bg-muted border-2 border-foreground/5 p-1.5 md:p-1 rounded-lg">
-              <TabsTrigger value="map" className="flex-1 min-w-[140px] md:min-w-0 font-serif font-bold py-2.5 data-[state=active]:bg-card data-[state=active]:text-primary rounded-md transition-all text-xs sm:text-sm shadow-sm md:shadow-none">
-                🗺️ Route Map
-              </TabsTrigger>
-              <TabsTrigger value="calculator" className="flex-1 min-w-[140px] md:min-w-0 font-serif font-bold py-2.5 data-[state=active]:bg-card data-[state=active]:text-primary rounded-md transition-all text-xs sm:text-sm shadow-sm md:shadow-none">
-                Profit Calculator
-              </TabsTrigger>
-              <TabsTrigger value="scorecard" className="flex-1 min-w-[140px] md:min-w-0 font-serif font-bold py-2.5 data-[state=active]:bg-card data-[state=active]:text-primary rounded-md transition-all text-xs sm:text-sm shadow-sm md:shadow-none">
-                Location Scorecard
-              </TabsTrigger>
-              <TabsTrigger value="pitch" className="flex-1 min-w-[140px] md:min-w-0 font-serif font-bold py-2.5 data-[state=active]:bg-card data-[state=active]:text-primary rounded-md transition-all text-xs sm:text-sm shadow-sm md:shadow-none">
-                Pitch Script Helper
-              </TabsTrigger>
-              <TabsTrigger value="inspection" className="flex-1 min-w-[140px] md:min-w-0 font-serif font-bold py-2.5 data-[state=active]:bg-card data-[state=active]:text-primary rounded-md transition-all text-xs sm:text-sm shadow-sm md:shadow-none">
-                Inspection Checklist
-              </TabsTrigger>
-            </TabsList>
+            {/* Scrollable TabsList container for mobile, clean grid for desktop */}
+            <div className="w-full overflow-x-auto scrollbar-none mb-8 -mx-4 px-4 md:mx-0 md:px-0">
+              <TabsList className="flex md:grid md:grid-cols-5 w-max md:w-full max-w-4xl mx-auto gap-1 md:gap-0 bg-muted/50 md:bg-muted border-2 border-foreground/5 p-1 rounded-lg">
+                <TabsTrigger value="map" className="px-4 py-2.5 font-serif font-bold data-[state=active]:bg-card data-[state=active]:text-primary rounded-md transition-all text-xs sm:text-sm shadow-sm md:shadow-none shrink-0 md:shrink">
+                  🗺️ Route Map
+                </TabsTrigger>
+                <TabsTrigger value="calculator" className="px-4 py-2.5 font-serif font-bold data-[state=active]:bg-card data-[state=active]:text-primary rounded-md transition-all text-xs sm:text-sm shadow-sm md:shadow-none shrink-0 md:shrink">
+                  Profit Calculator
+                </TabsTrigger>
+                <TabsTrigger value="scorecard" className="px-4 py-2.5 font-serif font-bold data-[state=active]:bg-card data-[state=active]:text-primary rounded-md transition-all text-xs sm:text-sm shadow-sm md:shadow-none shrink-0 md:shrink">
+                  Location Scorecard
+                </TabsTrigger>
+                <TabsTrigger value="pitch" className="px-4 py-2.5 font-serif font-bold data-[state=active]:bg-card data-[state=active]:text-primary rounded-md transition-all text-xs sm:text-sm shadow-sm md:shadow-none shrink-0 md:shrink">
+                  Pitch Script Helper
+                </TabsTrigger>
+                <TabsTrigger value="inspection" className="px-4 py-2.5 font-serif font-bold data-[state=active]:bg-card data-[state=active]:text-primary rounded-md transition-all text-xs sm:text-sm shadow-sm md:shadow-none shrink-0 md:shrink">
+                  Inspection Checklist
+                </TabsTrigger>
+              </TabsList>
+            </div>
 
             <div className="focus-visible:outline-none">
               <TabsContent value="map" className="focus-visible:outline-none">
