@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { MapView } from "@/components/Map";
+import L from "leaflet";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -24,10 +25,10 @@ export default function LocationMap() {
   const [score, setScore] = useState(3);
   const [status, setStatus] = useState<VendingLocation["status"]>("prospect");
   const [isMapLoading, setIsMapLoading] = useState(true);
+  const [isPlotting, setIsPlotting] = useState(false);
   
-  const mapRef = useRef<google.maps.Map | null>(null);
-  const markersRef = useRef<google.maps.Marker[]>([]);
-  const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
+  const mapRef = useRef<L.Map | null>(null);
+  const markersRef = useRef<L.Marker[]>([]);
 
   // Load locations from localStorage on mount
   useEffect(() => {
@@ -61,7 +62,7 @@ export default function LocationMap() {
   // Clean up markers on unmount
   useEffect(() => {
     return () => {
-      markersRef.current.forEach(m => m.setMap(null));
+      markersRef.current.forEach(m => m.remove());
     };
   }, []);
 
@@ -70,139 +71,112 @@ export default function LocationMap() {
     if (!mapRef.current) return;
 
     // Clear existing markers
-    markersRef.current.forEach(m => m.setMap(null));
+    markersRef.current.forEach(m => m.remove());
     markersRef.current = [];
 
-    const bounds = new google.maps.LatLngBounds();
+    const bounds: L.LatLngTuple[] = [];
 
     locations.forEach((loc) => {
-      // Snaxology Branded Custom SVG Pins (Vending Machine / Automat silhouettes with distinct inner icons)
       let pinColor = "#B42318"; // Prospect: Snaxology Cherry Red
-      let innerIconPath = "M12 17a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm0-4a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm0-4a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"; // Target: 3 vertical dots (shelves)
       let pinTitle = "Target Prospect";
 
       if (loc.status === "secured") {
         pinColor = "#74A35A"; // Secured: Snaxology Sage Green
-        innerIconPath = "M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"; // Checkmark
         pinTitle = "Secured Placement";
       } else if (loc.status === "contacted") {
         pinColor = "#E0843D"; // Contacted: Snaxology Mustard/Amber Orange
-        innerIconPath = "M20.01 15.38c-1.23 0-2.42-.2-3.53-.56a.977.977 0 0 0-1.01.24l-2.2 2.2a15.045 15.045 0 0 1-6.59-6.59l2.2-2.21a.96.96 0 0 0 .25-1.02c-.36-1.11-.56-2.3-.56-3.53C8.37 3.45 7.92 3 7.39 3H4.02C3.49 3 3 3.45 3 4.02C3 13.39 10.61 21 19.98 21c.57 0 1.02-.46 1.02-1.02v-3.53c0-.54-.45-1.07-1.01-1.07z"; // Phone Icon
         pinTitle = "Contacted";
       } else if (loc.status === "rejected") {
         pinColor = "#8E8E93"; // Rejected: Gray
-        innerIconPath = "M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"; // X Close Icon
         pinTitle = "Closed / Rejected";
       }
 
-      // Snaxology Custom Vending Machine Silhouette Pin
-      const svgMarker = {
-        // A sophisticated retro vending machine shape pin outline
-        path: "M6 2h12a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-3l3 3H5l3-3H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm0 2v5h12V4H6zm0 7v7h12v-7H6z",
-        fillColor: pinColor,
-        fillOpacity: 1,
-        strokeWeight: 1.5,
-        strokeColor: "#FFFFFF",
-        scale: 1.3,
-        anchor: new google.maps.Point(12, 24),
-      };
-
-      const marker = new google.maps.Marker({
-        position: { lat: loc.lat, lng: loc.lng },
-        map: mapRef.current,
-        title: `${loc.name} (${pinTitle})`,
-        icon: svgMarker,
+      // Create Custom Leaflet DivIcon for the Branded Pin
+      const customIcon = L.divIcon({
+        html: `
+          <div style="position: relative; width: 30px; height: 42px; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+            <!-- Outer Pin Shape (SVG) -->
+            <svg width="30" height="42" viewBox="0 0 30 42" fill="none" xmlns="http://www.w3.org/2000/svg" style="filter: drop-shadow(0px 2px 4px rgba(0,0,0,0.3));">
+              <path d="M15 0C6.71 0 0 6.71 0 15C0 26.25 15 42 15 42C15 42 30 26.25 30 15C30 6.71 23.29 0 15 0Z" fill="${pinColor}" stroke="#FFFFFF" stroke-width="1.5"/>
+            </svg>
+            <!-- Inner Branded Vending Icon -->
+            <div style="position: absolute; top: 8px; display: flex; align-items: center; justify-content: center; width: 14px; height: 14px; color: #FFFFFF;">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
+                <path d="M6 2h12a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-3l3 3H5l3-3H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm0 2v5h12V4H6zm0 7v7h12v-7H6z"/>
+              </svg>
+            </div>
+          </div>
+        `,
+        className: "custom-vending-pin",
+        iconSize: [30, 42],
+        iconAnchor: [15, 42],
+        popupAnchor: [0, -40]
       });
 
-      // Info Window
-      const infoWindow = new google.maps.InfoWindow({
-        content: `
-          <div style="font-family: sans-serif; padding: 8px; max-width: 200px;">
+      const marker = L.marker([loc.lat, loc.lng], { icon: customIcon })
+        .addTo(mapRef.current!)
+        .bindPopup(`
+          <div style="font-family: system-ui, sans-serif; padding: 4px; max-width: 200px;">
             <h4 style="margin: 0 0 4px 0; font-weight: bold; font-size: 14px; color: #151515;">${loc.name}</h4>
-            <p style="margin: 0 0 6px 0; font-size: 11px; color: #666;">${loc.address}</p>
-            <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #eee; padding-top: 6px;">
+            <p style="margin: 0 0 6px 0; font-size: 11px; color: #666; line-height: 1.3;">${loc.address}</p>
+            <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #eee; padding-top: 6px; margin-top: 4px;">
               <span style="font-size: 10px; font-weight: bold; text-transform: uppercase; color: ${pinColor};">${loc.status}</span>
               <span style="font-size: 11px; font-weight: bold; color: #B42318;">⭐ ${loc.score}/5</span>
             </div>
           </div>
-        `
-      });
-
-      marker.addListener("click", () => {
-        infoWindow.open(mapRef.current, marker);
-      });
+        `);
 
       markersRef.current.push(marker);
-      bounds.extend({ lat: loc.lat, lng: loc.lng });
+      bounds.push([loc.lat, loc.lng]);
     });
 
-    // Auto-fit map to show all markers if there are any
+    // Auto-fit map to show all markers
     if (locations.length > 0 && mapRef.current) {
-      mapRef.current.fitBounds(bounds);
-      // Don't zoom in too close if only 1 marker
+      mapRef.current.fitBounds(bounds, { padding: [50, 50] });
       if (locations.length === 1) {
         mapRef.current.setZoom(13);
       }
     }
   };
 
-  // Google Map Initialization callback
-  const handleMapReady = (map: google.maps.Map) => {
+  // Leaflet Map Initialization callback
+  const handleMapReady = (map: L.Map) => {
     mapRef.current = map;
     
-    // Simulate a smooth, satisfying loading transition to show off the custom branded spinner
     setTimeout(() => {
       setIsMapLoading(false);
     }, 1200);
     
-    // Set initial center to Miami
-    map.setCenter({ lat: 25.7617, lng: -80.1918 });
-    map.setZoom(11);
-
-    // Setup Autocomplete
-    const inputElement = document.getElementById("address-input") as HTMLInputElement;
-    if (inputElement && google.maps.places) {
-      const autocomplete = new google.maps.places.Autocomplete(inputElement, {
-        types: ["geocode", "establishment"]
-      });
-      
-      autocomplete.addListener("place_changed", () => {
-        const place = autocomplete.getPlace();
-        if (place.geometry && place.geometry.location) {
-          setAddress(place.formatted_address || place.name || "");
-          // Focus map on selected place
-          map.setCenter(place.geometry.location);
-          map.setZoom(15);
-        }
-      });
-      autocompleteRef.current = autocomplete;
-    }
-
     updateMarkers();
   };
 
-  // Add Location
-  const handleAddLocation = () => {
+  // Add Location with Geocoding Proxy
+  const handleAddLocation = async () => {
     if (!name.trim()) {
       toast.error("Please enter a location name.");
       return;
     }
     if (!address.trim()) {
-      toast.error("Please enter or select an address.");
+      toast.error("Please enter an address.");
       return;
     }
 
-    // Geocode address to get lat/lng if autocomplete didn't fully capture it
-    const geocoder = new google.maps.Geocoder();
-    geocoder.geocode({ address: address }, (results, statusResult) => {
-      if (statusResult === "OK" && results && results[0]) {
-        const geoLoc = results[0].geometry.location;
+    setIsPlotting(true);
+    const apiKey = import.meta.env.VITE_BUILT_IN_FORGE_API_KEY || "G2aKSzKduAizaCGgetZASt";
+    const url = `https://forge.manus.ai/v1/maps/proxy/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${apiKey}`;
+
+    try {
+      const response = await fetch(url);
+      const data = await response.json();
+
+      if (data.status === "OK" && data.results && data.results[0]) {
+        const geoLoc = data.results[0].geometry.location;
         const newLoc: VendingLocation = {
           id: Date.now().toString(),
           name,
-          address: results[0].formatted_address,
-          lat: geoLoc.lat(),
-          lng: geoLoc.lng(),
+          address: data.results[0].formatted_address,
+          lat: geoLoc.lat,
+          lng: geoLoc.lng,
           score,
           status
         };
@@ -213,15 +187,16 @@ export default function LocationMap() {
         setScore(3);
         setStatus("prospect");
         
-        // Clear input element physically
-        const inputElement = document.getElementById("address-input") as HTMLInputElement;
-        if (inputElement) inputElement.value = "";
-
         toast.success(`"${name}" successfully plotted on your route map!`);
       } else {
         toast.error("Could not find the coordinates for this address. Please try a more specific address.");
       }
-    });
+    } catch (error) {
+      console.error("Geocoding error:", error);
+      toast.error("An error occurred while geocoding the address. Please try again.");
+    } finally {
+      setIsPlotting(false);
+    }
   };
 
   // Delete Location
@@ -275,7 +250,7 @@ export default function LocationMap() {
       <CardContent className="pt-6 grid grid-cols-1 lg:grid-cols-12 gap-8">
         {/* Map & Plotting Form (8 cols) */}
         <div className="lg:col-span-8 space-y-6">
-          {/* Interactive Google Map */}
+          {/* Interactive Leaflet Map */}
           <div className="w-full h-[400px] rounded-lg border-2 border-foreground/15 overflow-hidden shadow-inner relative">
             {isMapLoading && (
               <div className="absolute inset-0 bg-background/95 backdrop-blur-sm z-10 flex flex-col items-center justify-center transition-all duration-500 ease-out">
@@ -324,6 +299,7 @@ export default function LocationMap() {
                 <Input
                   id="address-input"
                   placeholder="Start typing address..."
+                  value={address}
                   onChange={(e) => setAddress(e.target.value)}
                   className="bg-background border-2 border-foreground/10 focus:border-primary"
                 />
@@ -364,63 +340,69 @@ export default function LocationMap() {
 
               <Button
                 onClick={handleAddLocation}
-                className="tactile-btn-primary w-full h-10 flex items-center justify-center gap-1.5"
+                disabled={isPlotting}
+                className="w-full h-10 font-serif font-bold text-sm tracking-wider tactile-btn-primary flex items-center justify-center gap-2"
               >
-                <MapPin className="w-4 h-4" />
-                <span>Plot Location</span>
+                {isPlotting ? "Plotting..." : "Plot Location"}
               </Button>
             </div>
           </div>
         </div>
 
-        {/* Saved Route List (4 cols) */}
-        <div className="lg:col-span-4 border-2 border-foreground/10 rounded-lg bg-card flex flex-col h-[560px]">
-          <div className="bg-primary/5 px-4 py-3 border-b-2 border-foreground/10 flex items-center justify-between">
-            <h4 className="font-serif font-bold text-foreground text-sm">My Vending Route ({locations.length})</h4>
-            <span className="text-[10px] font-bold text-foreground/40 uppercase tracking-wider">Saved Spots</span>
-          </div>
+        {/* Saved Locations Sidebar (4 cols) */}
+        <div className="lg:col-span-4 space-y-4">
+          <div className="border-2 border-foreground/10 rounded-lg p-4 bg-card">
+            <h4 className="font-serif font-bold text-foreground text-base border-b border-foreground/10 pb-2 flex items-center justify-between">
+              <span>My Vending Route ({locations.length})</span>
+              <span className="text-xs font-sans font-normal text-foreground/60">Saved Spots</span>
+            </h4>
+            
+            <div className="mt-4 space-y-3 max-h-[460px] overflow-y-auto pr-1">
+              {locations.length === 0 ? (
+                <div className="text-center py-8 text-muted-foreground">
+                  <MapPin className="w-8 h-8 mx-auto text-muted-foreground/40 mb-2" />
+                  <p className="text-sm font-semibold">No locations plotted yet.</p>
+                  <p className="text-xs mt-1">Add your first target prospect to start mapping your route!</p>
+                </div>
+              ) : (
+                locations.map((loc) => {
+                  let statusBadgeColor = "bg-primary/10 text-primary border-primary/20";
+                  if (loc.status === "secured") statusBadgeColor = "bg-emerald-500/10 text-emerald-600 border-emerald-500/20";
+                  if (loc.status === "contacted") statusBadgeColor = "bg-amber-500/10 text-amber-600 border-amber-500/20";
+                  if (loc.status === "rejected") statusBadgeColor = "bg-muted text-muted-foreground border-muted-foreground/20";
 
-          <div className="p-3 overflow-y-auto grow space-y-2.5">
-            {locations.length === 0 ? (
-              <div className="text-center py-12 text-foreground/40 space-y-2">
-                <MapPin className="w-8 h-8 mx-auto stroke-1" />
-                <p className="text-xs font-medium">No locations plotted yet.</p>
-                <p className="text-[10px]">Use the form to add your first prospect!</p>
-              </div>
-            ) : (
-              locations.map((loc) => {
-                let statusBadge = "bg-primary/10 text-primary border-primary/20";
-                if (loc.status === "secured") statusBadge = "bg-secondary/10 text-secondary border-secondary/20";
-                if (loc.status === "contacted") statusBadge = "bg-amber-500/10 text-amber-600 border-amber-500/20";
-                if (loc.status === "rejected") statusBadge = "bg-foreground/10 text-foreground/50 border-foreground/10";
-
-                return (
-                  <div key={loc.id} className="border-2 border-foreground/5 rounded-md p-3 bg-background hover:border-primary/20 transition-all flex justify-between items-start gap-2 group">
-                    <div className="space-y-1.5 min-w-0">
-                      <div className="flex items-center gap-1.5 flex-wrap">
-                        <h5 className="font-serif font-bold text-xs sm:text-sm text-foreground/90 truncate max-w-[140px]">{loc.name}</h5>
-                        <span className={`text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded border ${statusBadge}`}>
-                          {loc.status}
-                        </span>
-                      </div>
-                      <p className="text-[10px] text-foreground/50 truncate max-w-[180px]">{loc.address}</p>
-                      <div className="flex items-center gap-1 text-[10px] font-bold text-primary">
-                        <Star className="w-3 h-3 fill-current" />
-                        <span>Score: {loc.score}/5</span>
-                      </div>
-                    </div>
-                    <Button
-                      onClick={() => handleDeleteLocation(loc.id)}
-                      variant="ghost"
-                      size="sm"
-                      className="text-foreground/30 hover:text-destructive hover:bg-destructive/5 h-7 w-7 p-0 shrink-0"
+                  return (
+                    <div 
+                      key={loc.id}
+                      className="group border-2 border-foreground/5 hover:border-primary/20 rounded-md p-3 bg-background hover:bg-primary/5 transition-all duration-200 flex items-start justify-between gap-2"
                     >
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </Button>
-                  </div>
-                );
-              })
-            )}
+                      <div className="space-y-1 min-w-0">
+                        <h5 className="font-serif font-bold text-sm text-foreground truncate">{loc.name}</h5>
+                        <p className="text-xs text-foreground/60 truncate">{loc.address}</p>
+                        <div className="flex items-center gap-2 pt-1">
+                          <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded border ${statusBadgeColor}`}>
+                            {loc.status}
+                          </span>
+                          <span className="text-[10px] font-bold text-primary flex items-center gap-0.5">
+                            <Star className="w-3 h-3 fill-current" />
+                            <span>{loc.score}/5</span>
+                          </span>
+                        </div>
+                      </div>
+                      
+                      <Button
+                        onClick={() => handleDeleteLocation(loc.id)}
+                        variant="ghost"
+                        size="icon"
+                        className="w-7 h-7 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-md shrink-0 opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity duration-150"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </Button>
+                    </div>
+                  );
+                })
+              )}
+            </div>
           </div>
         </div>
       </CardContent>
