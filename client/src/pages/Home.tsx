@@ -535,6 +535,13 @@ export default function Home() {
             <div className="space-y-3 text-sm text-background/80 font-sans">
               <div className="flex items-center gap-2.5">
                 <Globe className="w-4 h-4 text-primary shrink-0" />
+                <a href="https://snaxology.ai/" target="_blank" rel="noopener noreferrer" className="hover:text-primary hover:underline flex items-center gap-1">
+                  <span>snaxology.ai</span>
+                  <ExternalLink className="w-3 h-3" />
+                </a>
+              </div>
+              <div className="flex items-center gap-2.5">
+                <Globe className="w-4 h-4 text-primary shrink-0" />
                 <a href="https://www.snaxologyvending.com" target="_blank" rel="noopener noreferrer" className="hover:text-primary hover:underline flex items-center gap-1">
                   <span>www.snaxologyvending.com</span>
                   <ExternalLink className="w-3 h-3" />
