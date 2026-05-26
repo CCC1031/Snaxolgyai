@@ -55,6 +55,8 @@ export default function Home() {
   const [activeStepId, setActiveStepId] = useState<number>(1);
   const [expandedTips, setExpandedTips] = useState<Record<number, boolean>>({});
   const [isLeadModalOpen, setIsLeadModalOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState("map");
+  const [selectedLocationId, setSelectedLocationId] = useState<string | null>(null);
 
   // Read current calculator & locations data to pass to the LeadCaptureModal
   const getFunnelData = () => {
@@ -445,7 +447,7 @@ export default function Home() {
             </p>
           </div>
 
-          <Tabs defaultValue="map" className="w-full">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             <TabsList className="flex flex-wrap md:grid md:grid-cols-5 w-full max-w-4xl mx-auto gap-2 md:gap-0 mb-8 bg-muted/50 md:bg-muted border-2 border-foreground/5 p-1.5 md:p-1 rounded-lg">
               <TabsTrigger value="map" className="flex-1 min-w-[140px] md:min-w-0 font-serif font-bold py-2.5 data-[state=active]:bg-card data-[state=active]:text-primary rounded-md transition-all text-xs sm:text-sm shadow-sm md:shadow-none">
                 🗺️ Route Map
@@ -466,13 +468,22 @@ export default function Home() {
 
             <div className="focus-visible:outline-none">
               <TabsContent value="map" className="focus-visible:outline-none">
-                <LocationMap />
+                <LocationMap 
+                  onScoreLocation={(id) => {
+                    setSelectedLocationId(id);
+                    setActiveTab("scorecard");
+                  }}
+                />
               </TabsContent>
               <TabsContent value="calculator" className="focus-visible:outline-none">
                 <VendingCalculator />
               </TabsContent>
               <TabsContent value="scorecard" className="focus-visible:outline-none">
-                <LocationScorecard />
+                <LocationScorecard 
+                  selectedLocationId={selectedLocationId}
+                  onLocationChange={setSelectedLocationId}
+                  onBackToMap={() => setActiveTab("map")}
+                />
               </TabsContent>
               <TabsContent value="pitch" className="focus-visible:outline-none">
                 <PitchHelper />

@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { MapPin, Plus, Trash2, Map, Star, RefreshCw } from "lucide-react";
+import { MapPin, Plus, Trash2, Map, Star, RefreshCw, CheckSquare } from "lucide-react";
 import { toast } from "sonner";
 
 interface VendingLocation {
@@ -18,7 +18,11 @@ interface VendingLocation {
   status: "prospect" | "contacted" | "secured" | "rejected";
 }
 
-export default function LocationMap() {
+interface LocationMapProps {
+  onScoreLocation?: (id: string) => void;
+}
+
+export default function LocationMap({ onScoreLocation }: LocationMapProps) {
   const [locations, setLocations] = useState<VendingLocation[]>([]);
   const [name, setName] = useState("");
   const [address, setAddress] = useState("");
@@ -59,14 +63,19 @@ export default function LocationMap() {
     updateMarkers();
   }, [locations]);
 
-  // Clean up markers on unmount
-  useEffect(() => {
-    return () => {
-      markersRef.current.forEach(m => m.remove());
-    };
-  }, []);
+  // Handle Leaflet Map Ready
+  const handleMapReady = (map: L.Map) => {
+    mapRef.current = map;
+    
+    // Add a slight timeout to let the tiles load and trigger transition
+    setTimeout(() => {
+      setIsMapLoading(false);
+    }, 1200);
+    
+    updateMarkers();
+  };
 
-  // Update map markers
+  // Re-render markers and fit bounds
   const updateMarkers = () => {
     if (!mapRef.current) return;
 
@@ -139,42 +148,31 @@ export default function LocationMap() {
     }
   };
 
-  // Leaflet Map Initialization callback
-  const handleMapReady = (map: L.Map) => {
-    mapRef.current = map;
-    
-    setTimeout(() => {
-      setIsMapLoading(false);
-    }, 1200);
-    
-    updateMarkers();
-  };
-
-  // Add Location with Geocoding Proxy
+  // Add Location & Geocode
   const handleAddLocation = async () => {
-    if (!name.trim()) {
-      toast.error("Please enter a location name.");
-      return;
-    }
-    if (!address.trim()) {
-      toast.error("Please enter an address.");
+    if (!name || !address) {
+      toast.error("Please fill out both the location name and search address.");
       return;
     }
 
     setIsPlotting(true);
-    const apiKey = import.meta.env.VITE_BUILT_IN_FORGE_API_KEY || "G2aKSzKduAizaCGgetZASt";
-    const url = `https://forge.manus.ai/v1/maps/proxy/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${apiKey}`;
 
     try {
+      // Geocode using Manus Geocoding Proxy with the reliable backend API key
+      const apiKey = "G2aKSzKduAizaCGgetZASt";
+      const url = `https://forge.manus.ai/v1/maps/proxy/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${apiKey}`;
+
       const response = await fetch(url);
       const data = await response.json();
 
       if (data.status === "OK" && data.results && data.results[0]) {
         const geoLoc = data.results[0].geometry.location;
+        const formattedAddress = data.results[0].formatted_address;
+
         const newLoc: VendingLocation = {
           id: Date.now().toString(),
           name,
-          address: data.results[0].formatted_address,
+          address: formattedAddress,
           lat: geoLoc.lat,
           lng: geoLoc.lng,
           score,
@@ -298,7 +296,7 @@ export default function LocationMap() {
                 <Label htmlFor="address-input" className="text-xs font-semibold text-foreground/70">Search Address</Label>
                 <Input
                   id="address-input"
-                  placeholder="Start typing address..."
+                  placeholder="e.g., 250 Wynwood Way, Miami, FL"
                   value={address}
                   onChange={(e) => setAddress(e.target.value)}
                   className="bg-background border-2 border-foreground/10 focus:border-primary"
@@ -306,7 +304,7 @@ export default function LocationMap() {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 items-end">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1.5">
                 <Label htmlFor="loc-status" className="text-xs font-semibold text-foreground/70">Outreach Status</Label>
                 <select
@@ -318,12 +316,12 @@ export default function LocationMap() {
                   <option value="prospect">🎯 Target Prospect</option>
                   <option value="contacted">📞 Contacted</option>
                   <option value="secured">🤝 Secured Placement</option>
-                  <option value="rejected">❌ Rejected / Closed</option>
+                  <option value="rejected">❌ Closed / Rejected</option>
                 </select>
               </div>
 
               <div className="space-y-1.5">
-                <Label htmlFor="loc-score" className="text-xs font-semibold text-foreground/70">Location Score (1–5)</Label>
+                <Label htmlFor="loc-score" className="text-xs font-semibold text-foreground/70">Initial Priority / Quality</Label>
                 <select
                   id="loc-score"
                   value={score}
@@ -374,30 +372,45 @@ export default function LocationMap() {
                   return (
                     <div 
                       key={loc.id}
-                      className="group border-2 border-foreground/5 hover:border-primary/20 rounded-md p-3 bg-background hover:bg-primary/5 transition-all duration-200 flex items-start justify-between gap-2"
+                      className="group border-2 border-foreground/5 hover:border-primary/20 rounded-md p-3 bg-background hover:bg-primary/5 transition-all duration-200"
                     >
-                      <div className="space-y-1 min-w-0">
-                        <h5 className="font-serif font-bold text-sm text-foreground truncate">{loc.name}</h5>
-                        <p className="text-xs text-foreground/60 truncate">{loc.address}</p>
-                        <div className="flex items-center gap-2 pt-1">
-                          <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded border ${statusBadgeColor}`}>
-                            {loc.status}
-                          </span>
-                          <span className="text-[10px] font-bold text-primary flex items-center gap-0.5">
-                            <Star className="w-3 h-3 fill-current" />
-                            <span>{loc.score}/5</span>
-                          </span>
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="space-y-1 min-w-0">
+                          <h5 className="font-serif font-bold text-sm text-foreground truncate">{loc.name}</h5>
+                          <p className="text-xs text-foreground/60 truncate">{loc.address}</p>
+                          <div className="flex items-center gap-2 pt-1">
+                            <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded border ${statusBadgeColor}`}>
+                              {loc.status}
+                            </span>
+                            <span className="text-[10px] font-bold text-primary flex items-center gap-0.5">
+                              <Star className="w-3 h-3 fill-current" />
+                              <span>{loc.score}/5</span>
+                            </span>
+                          </div>
                         </div>
+                        
+                        <Button
+                          onClick={() => handleDeleteLocation(loc.id)}
+                          variant="ghost"
+                          size="icon"
+                          className="w-7 h-7 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-md shrink-0 opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity duration-150"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </Button>
                       </div>
                       
-                      <Button
-                        onClick={() => handleDeleteLocation(loc.id)}
-                        variant="ghost"
-                        size="icon"
-                        className="w-7 h-7 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-md shrink-0 opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity duration-150"
-                      >
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </Button>
+                      {/* Quick Action Button to Score this location */}
+                      <div className="flex gap-2 pt-2 mt-2 border-t border-foreground/5">
+                        <Button
+                          onClick={() => onScoreLocation?.(loc.id)}
+                          variant="outline"
+                          size="sm"
+                          className="w-full h-7 text-xs font-serif font-bold text-primary hover:bg-primary/5 flex items-center justify-center gap-1 border-primary/20"
+                        >
+                          <CheckSquare className="w-3 h-3" />
+                          <span>{loc.score > 0 && loc.score !== 3 ? "Update Scorecard" : "Evaluate Scorecard"}</span>
+                        </Button>
+                      </div>
                     </div>
                   );
                 })

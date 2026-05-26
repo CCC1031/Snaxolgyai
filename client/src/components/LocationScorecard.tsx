@@ -1,9 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
-import { CheckSquare, AlertTriangle, Sparkles, HelpCircle } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { CheckSquare, AlertTriangle, Sparkles, HelpCircle, ArrowLeft, Save, MapPin } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { toast } from "sonner";
 
 interface ScoreFactor {
   id: string;
@@ -12,7 +14,30 @@ interface ScoreFactor {
   score: number;
 }
 
-export default function LocationScorecard() {
+interface LocationScorecardProps {
+  selectedLocationId?: string | null;
+  onLocationChange?: (id: string | null) => void;
+  onBackToMap?: () => void;
+}
+
+interface VendingLocation {
+  id: string;
+  name: string;
+  address: string;
+  lat: number;
+  lng: number;
+  score: number;
+  status: "prospect" | "contacted" | "secured" | "rejected";
+  detailedScores?: Record<string, number>;
+}
+
+export default function LocationScorecard({ 
+  selectedLocationId, 
+  onLocationChange,
+  onBackToMap 
+}: LocationScorecardProps) {
+  const [locations, setLocations] = useState<VendingLocation[]>([]);
+  const [selectedLocation, setSelectedLocation] = useState<VendingLocation | null>(null);
   const [locationName, setLocationName] = useState<string>("Sample Location (e.g., Local Warehouse)");
   const [factors, setFactors] = useState<ScoreFactor[]>([
     { id: "traffic", name: "Daily Foot Traffic", weight: "High volume is critical", score: 3 },
@@ -27,12 +52,88 @@ export default function LocationScorecard() {
     { id: "expansion", name: "Opportunity to expand later", weight: "Space for more machines/smart coolers", score: 3 }
   ]);
 
+  // Load locations from localStorage
+  useEffect(() => {
+    const saved = localStorage.getItem("snaxology_vending_locations");
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        setLocations(parsed);
+      } catch (e) {
+        console.error("Failed to load locations in scorecard", e);
+      }
+    }
+  }, [selectedLocationId]);
+
+  // Handle selected location change
+  useEffect(() => {
+    if (locations.length > 0 && selectedLocationId) {
+      const loc = locations.find(l => l.id === selectedLocationId);
+      if (loc) {
+        setSelectedLocation(loc);
+        setLocationName(loc.name);
+        
+        // Load detailed scores if they exist, otherwise default to average/existing score
+        const defaultScore = loc.score > 0 ? Math.round(loc.score) : 3;
+        const detailed = loc.detailedScores || {};
+        
+        setFactors(prev => prev.map(f => ({
+          ...f,
+          score: detailed[f.id] !== undefined ? detailed[f.id] : defaultScore
+        })));
+      }
+    } else {
+      setSelectedLocation(null);
+    }
+  }, [locations, selectedLocationId]);
+
   const handleScoreChange = (id: string, value: number) => {
     const validatedValue = Math.max(1, Math.min(5, value));
     setFactors(factors.map(f => f.id === id ? { ...f, score: validatedValue } : f));
   };
 
   const totalScore = factors.reduce((sum, f) => sum + f.score, 0);
+  
+  // Calculate average out of 5 to save back to the map location
+  const averageScore = Math.round((totalScore / 50) * 5 * 10) / 10; // Round to 1 decimal place
+
+  // Save the scorecard back to the location list
+  const handleSaveScorecard = () => {
+    if (!selectedLocationId || !selectedLocation) {
+      toast.error("No active mapped location selected to save this scorecard.");
+      return;
+    }
+
+    const detailedScores: Record<string, number> = {};
+    factors.forEach(f => {
+      detailedScores[f.id] = f.score;
+    });
+
+    const updatedLocations = locations.map(loc => {
+      if (loc.id === selectedLocationId) {
+        return {
+          ...loc,
+          name: locationName, // Allow renaming from scorecard
+          score: Math.round(averageScore), // Save 1-5 integer score for pins
+          detailedScores
+        };
+      }
+      return loc;
+    });
+
+    localStorage.setItem("snaxology_vending_locations", JSON.stringify(updatedLocations));
+    setLocations(updatedLocations);
+    
+    toast.success(`Scorecard for "${locationName}" saved successfully!`, {
+      description: `Calculated Score: ${totalScore}/50 (Map Rating: ${Math.round(averageScore)}/5 Stars)`
+    });
+
+    if (onBackToMap) {
+      setTimeout(() => {
+        onBackToMap();
+      }, 800);
+    }
+  };
 
   // Score analysis
   let scoreStatus = {
@@ -61,14 +162,43 @@ export default function LocationScorecard() {
   return (
     <Card className="tactile-card">
       <CardHeader className="bg-primary/5 border-b border-foreground/10 pb-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div className="space-y-1">
-            <CardTitle className="font-serif text-xl">Interactive Location Scorecard</CardTitle>
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="space-y-1.5">
+            <div className="flex items-center gap-2">
+              {onBackToMap && (
+                <Button 
+                  onClick={onBackToMap}
+                  variant="ghost" 
+                  size="icon" 
+                  className="w-8 h-8 -ml-2 text-muted-foreground hover:text-foreground"
+                >
+                  <ArrowLeft className="w-4 h-4" />
+                </Button>
+              )}
+              <CardTitle className="font-serif text-xl">Interactive Location Scorecard</CardTitle>
+            </div>
             <CardDescription className="text-foreground/70">
-              Score your prospective locations from 1 (poor) to 5 (excellent) to filter out bad placements.
+              {selectedLocation 
+                ? `Scoring mapped location: ${selectedLocation.name}`
+                : "Score your prospective locations from 1 (poor) to 5 (excellent) to filter out bad placements."
+              }
             </CardDescription>
           </div>
-          <div className="w-full sm:w-auto">
+          
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+            {locations.length > 0 && (
+              <select
+                value={selectedLocationId || ""}
+                onChange={(e) => onLocationChange?.(e.target.value || null)}
+                className="h-10 rounded-md border-2 border-foreground/10 bg-background px-3 py-1.5 text-sm font-serif font-bold text-primary focus:border-primary focus:outline-none"
+              >
+                <option value="">-- Select Mapped Location --</option>
+                {locations.map(loc => (
+                  <option key={loc.id} value={loc.id}>📍 {loc.name}</option>
+                ))}
+              </select>
+            )}
+            
             <Input
               value={locationName}
               onChange={(e) => setLocationName(e.target.value)}
@@ -79,6 +209,13 @@ export default function LocationScorecard() {
         </div>
       </CardHeader>
       <CardContent className="pt-6 space-y-6">
+        {selectedLocation && (
+          <div className="bg-primary/5 border border-primary/10 rounded-md p-3 flex items-center gap-2 text-xs text-primary font-medium">
+            <MapPin className="w-4 h-4 text-primary shrink-0" />
+            <span>Connected to mapped spot: <strong>{selectedLocation.name}</strong> ({selectedLocation.address})</span>
+          </div>
+        )}
+
         <div className="overflow-x-auto border-2 border-foreground/10 rounded-lg">
           <Table>
             <TableHeader className="bg-muted">
@@ -131,10 +268,23 @@ export default function LocationScorecard() {
             </div>
             <p className="text-sm leading-relaxed opacity-90">{scoreStatus.desc}</p>
           </div>
-          <div className="text-center md:border-l-2 md:border-dashed md:border-foreground/10 md:pl-8 flex flex-col justify-center min-w-[120px]">
-            <p className="text-xs font-semibold uppercase tracking-wider opacity-70">Total Score</p>
-            <p className="text-5xl font-bold font-serif mt-1">{totalScore}</p>
-            <p className="text-xs opacity-60 mt-1">out of 50</p>
+          
+          <div className="flex flex-col sm:flex-row items-center gap-6 shrink-0">
+            <div className="text-center md:border-l-2 md:border-dashed md:border-foreground/10 md:pl-6 flex flex-col justify-center min-w-[120px]">
+              <p className="text-xs font-semibold uppercase tracking-wider opacity-70">Total Score</p>
+              <p className="text-5xl font-bold font-serif mt-1">{totalScore}</p>
+              <p className="text-xs opacity-60 mt-1">out of 50</p>
+            </div>
+
+            {selectedLocationId && (
+              <Button
+                onClick={handleSaveScorecard}
+                className="tactile-btn-primary w-full sm:w-auto h-12 px-6 flex items-center justify-center gap-2 font-serif font-bold tracking-wider"
+              >
+                <Save className="w-4 h-4" />
+                <span>Save Scorecard</span>
+              </Button>
+            )}
           </div>
         </div>
       </CardContent>
