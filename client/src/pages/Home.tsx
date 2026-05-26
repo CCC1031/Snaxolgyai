@@ -177,7 +177,7 @@ export default function Home() {
               Business Today
             </h1>
             <p className="text-base md:text-lg max-w-2xl text-foreground/80 leading-relaxed font-sans">
-              Clarence’s complete, step-by-step roadmap designed specifically for Snaxology partners. 
+              Snaxology’s complete, step-by-step roadmap designed specifically for Snaxology partners. 
               Track your progress live, calculate your profit margins, and score potential locations.
             </p>
           </div>
@@ -300,7 +300,7 @@ export default function Home() {
           <div className="border-2 border-dashed border-primary/20 rounded-lg p-5 bg-primary/5 space-y-3">
             <div className="flex items-center gap-2 text-primary">
               <Info className="w-5 h-5 shrink-0" />
-              <h4 className="font-serif font-bold text-base">Clarence's Golden Rule</h4>
+              <h4 className="font-serif font-bold text-base">Snaxology's Golden Rule</h4>
             </div>
             <p className="text-xs text-foreground/80 leading-relaxed font-sans">
               "Vending is simple, but it is not automatic. The people who win are the people who choose better locations, 
@@ -379,7 +379,7 @@ export default function Home() {
                   >
                     <div className="flex items-center gap-2">
                       <Sparkles className="w-4 h-4" />
-                      <span>Clarence's Pro-Tips & Strategy</span>
+                      <span>Snaxology's Pro-Tips & Strategy</span>
                     </div>
                     {expandedTips[activeStep.id] ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
                   </button>
@@ -441,7 +441,7 @@ export default function Home() {
               Vending Business Toolkits
             </h2>
             <p className="text-sm md:text-base text-foreground/70 max-w-2xl mx-auto">
-              Equip yourself with the tools Clarence uses daily to inspect machines, analyze locations, and negotiate deals.
+              Equip yourself with the tools Snaxology uses daily to inspect machines, analyze locations, and negotiate deals.
             </p>
           </div>
 
@@ -511,7 +511,7 @@ export default function Home() {
               We design and manage tailored refreshment experiences for modern property managers and busy shared spaces.
             </p>
             <p className="text-xs text-background/50 font-sans">
-              &copy; {new Date().getFullYear()} Snaxology Vending LLC. All rights reserved. Built for Clarence's Vending Community.
+              &copy; {new Date().getFullYear()} Snaxology Vending LLC. All rights reserved. Built for Snaxology's Vending Community.
             </p>
           </div>
 

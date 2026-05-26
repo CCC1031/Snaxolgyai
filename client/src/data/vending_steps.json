@@ -52,7 +52,7 @@
     "id": 4,
     "title": "Execute the Outreach and Pitch",
     "badge": "Outreach",
-    "description": "Getting locations requires active outreach. You are offering a free amenity to improve their employee or customer experience. Use Clarence's proven script to open doors and overcome common objections.",
+    "description": "Getting locations requires active outreach. You are offering a free amenity to improve their employee or customer experience. Use Snaxology's proven script to open doors and overcome common objections.",
     "tasks": [
       { "id": "4_1", "text": "Contact at least 10 locations this week.", "done": false },
       { "id": "4_2", "text": "Use the pitch script: 'We install, stock, and service the machine at zero cost to you.'", "done": false },

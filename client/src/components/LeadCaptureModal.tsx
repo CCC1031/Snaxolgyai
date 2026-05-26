@@ -231,7 +231,7 @@ export default function LeadCaptureModal({ isOpen, onClose, calculatorData, loca
             <span>Generate Your Custom Plan</span>
           </DialogTitle>
           <DialogDescription className="text-foreground/70 mt-1">
-            Submit your details to instantly download your Snaxology-branded PDF vending plan and send a lead summary directly to Clarence.
+            Submit your details to instantly download your Snaxology-branded PDF vending plan and send a lead summary directly to Snaxology.
           </DialogDescription>
         </DialogHeader>
 
@@ -242,7 +242,7 @@ export default function LeadCaptureModal({ isOpen, onClose, calculatorData, loca
               <div className="relative">
                 <Input
                   id="lead-name"
-                  placeholder="e.g., Clarence Snax"
+                  placeholder="e.g., Snaxology Partner"
                   required
                   value={name}
                   onChange={(e) => setName(e.target.value)}
@@ -314,7 +314,7 @@ export default function LeadCaptureModal({ isOpen, onClose, calculatorData, loca
             </div>
             <h3 className="font-serif font-bold text-2xl text-foreground">Plan Generated!</h3>
             <p className="text-sm text-foreground/70 max-w-sm mx-auto">
-              Your customized business plan PDF is downloading. Clarence has been notified of your scorecard and will reach out to help you secure your locations!
+              Your customized business plan PDF is downloading. Snaxology has been notified of your scorecard and will reach out to help you secure your locations!
             </p>
             <div className="flex gap-3 justify-center pt-2">
               <Button onClick={generateBrandedPDF} variant="outline" className="tactile-btn-secondary flex items-center gap-2">

@@ -12,12 +12,12 @@ export default function PitchHelper() {
     {
       title: "The Warm Intro (In-Person)",
       scenario: "Walking into a local auto shop, warehouse, or office to find the manager.",
-      text: "Hi, my name is Clarence, and I'm with Snaxology Vending. We're a local, family-owned business right here in Miami. I was driving by and noticed your team works hard here, and I wanted to see if you have any vending or refreshment services on site? We actually provide, install, and stock modern, clean snack and drink machines completely free of charge to you. Our goal is to make sure your employees and customers have cold drinks and fresh snacks without you ever having to lift a finger or pay a cent. Is that something you'd be open to?"
+      text: "Hi, my name is a Snaxology representative, and I'm with Snaxology Vending. We're a local, family-owned business right here in Miami. I was driving by and noticed your team works hard here, and I wanted to see if you have any vending or refreshment services on site? We actually provide, install, and stock modern, clean snack and drink machines completely free of charge to you. Our goal is to make sure your employees and customers have cold drinks and fresh snacks without you ever having to lift a finger or pay a cent. Is that something you'd be open to?"
     },
     {
       title: "The Cold Call Script",
       scenario: "Calling local businesses to identify the decision maker and schedule a visit.",
-      text: "Hi there, I was hoping to speak with the office manager or facility director? ... Hi, my name is Clarence from Snaxology Vending. We're a local Miami vending operator. We're currently expanding our route in your area and are offering to place a brand-new, energy-efficient beverage and snack machine in your break room at zero cost to your company. We handle 100% of the installation, maintenance, and stocking. I'd love to drop by for just 5 minutes this Thursday to show you a quick photo of our modern machines and see if we'd be a good fit. Would morning or afternoon work better for you?"
+      text: "Hi there, I was hoping to speak with the office manager or facility director? ... Hi, my name is a Snaxology representative from Snaxology Vending. We're a local Miami vending operator. We're currently expanding our route in your area and are offering to place a brand-new, energy-efficient beverage and snack machine in your break room at zero cost to your company. We handle 100% of the installation, maintenance, and stocking. I'd love to drop by for just 5 minutes this Thursday to show you a quick photo of our modern machines and see if we'd be a good fit. Would morning or afternoon work better for you?"
     }
   ];
 
@@ -55,7 +55,7 @@ export default function PitchHelper() {
           <CardTitle className="font-serif text-xl">Interactive Pitch & Objection Helper</CardTitle>
         </div>
         <CardDescription className="text-foreground/70">
-          Use Clarence's battle-tested pitch scripts and objection-handling plays to secure prime placements.
+          Use Snaxology's battle-tested pitch scripts and objection-handling plays to secure prime placements.
         </CardDescription>
       </CardHeader>
       <CardContent className="pt-6">
