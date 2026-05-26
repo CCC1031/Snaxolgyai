@@ -196,7 +196,7 @@ export default function LeadCaptureModal({ isOpen, onClose, calculatorData, loca
     };
 
     // Render the PDF
-    html2pdf().from(element).set(opt).save();
+    (html2pdf() as any).from(element).set(opt).save();
   };
 
   return (
