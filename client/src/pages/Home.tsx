@@ -177,7 +177,7 @@ export default function Home() {
               Business Today
             </h1>
             <p className="text-base md:text-lg max-w-2xl text-foreground/80 leading-relaxed font-sans">
-              Snaxology’s complete, step-by-step roadmap designed specifically for Snaxology partners. 
+              Snaxology’s complete, step-by-step roadmap designed specifically to help you build, launch, and scale a highly profitable vending route. 
               Track your progress live, calculate your profit margins, and score potential locations.
             </p>
           </div>
