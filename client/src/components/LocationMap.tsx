@@ -23,6 +23,7 @@ export default function LocationMap() {
   const [address, setAddress] = useState("");
   const [score, setScore] = useState(3);
   const [status, setStatus] = useState<VendingLocation["status"]>("prospect");
+  const [isMapLoading, setIsMapLoading] = useState(true);
   
   const mapRef = useRef<google.maps.Map | null>(null);
   const markersRef = useRef<google.maps.Marker[]>([]);
@@ -149,6 +150,11 @@ export default function LocationMap() {
   const handleMapReady = (map: google.maps.Map) => {
     mapRef.current = map;
     
+    // Simulate a smooth, satisfying loading transition to show off the custom branded spinner
+    setTimeout(() => {
+      setIsMapLoading(false);
+    }, 1200);
+    
     // Set initial center to Miami
     map.setCenter({ lat: 25.7617, lng: -80.1918 });
     map.setZoom(11);
@@ -271,6 +277,26 @@ export default function LocationMap() {
         <div className="lg:col-span-8 space-y-6">
           {/* Interactive Google Map */}
           <div className="w-full h-[400px] rounded-lg border-2 border-foreground/15 overflow-hidden shadow-inner relative">
+            {isMapLoading && (
+              <div className="absolute inset-0 bg-background/95 backdrop-blur-sm z-10 flex flex-col items-center justify-center transition-all duration-500 ease-out">
+                <div className="relative flex items-center justify-center w-24 h-24 mb-4">
+                  {/* Outer Pulsing Branded Ring */}
+                  <div className="absolute inset-0 rounded-full border-4 border-primary/20 animate-ping duration-1000" />
+                  {/* Spinning Inner Ring */}
+                  <div className="absolute inset-1 rounded-full border-4 border-transparent border-t-primary border-r-primary animate-spin duration-700" />
+                  {/* Central Retro Vending Silhouette SVG */}
+                  <svg className="w-10 h-10 text-primary animate-pulse" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M6 2h12a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-3l3 3H5l3-3H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm0 2v5h12V4H6zm0 7v7h12v-7H6z" />
+                  </svg>
+                </div>
+                <h4 className="font-serif font-bold text-lg text-foreground tracking-wide animate-pulse">
+                  Plotting Your Vending Route...
+                </h4>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Connecting to Snaxology AI Mapping Engine
+                </p>
+              </div>
+            )}
             <MapView onMapReady={handleMapReady} />
           </div>
 
